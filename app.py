@@ -1,12 +1,28 @@
 import streamlit as st
 import json
 import os
+import sys
+import subprocess
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.memory import ConversationBufferMemory
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from sentence_transformers import SentenceTransformer
 import chromadb
+
+# Auto-install missing dependencies
+def install_package(package):
+    try:
+        __import__(package)
+    except ModuleNotFoundError:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Ensure necessary libraries are installed
+install_package("langchain")
+install_package("langchain_huggingface")
+install_package("langchain_groq")
+install_package("sentence-transformers")
+install_package("chromadb")
 
 # JSON Memory File
 MEMORY_FILE = "chat_memory.json"
