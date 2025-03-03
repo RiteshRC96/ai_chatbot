@@ -7,3 +7,4 @@ streamlit
 groq
 langchain_community
 langchain_groq
+sqlite3
