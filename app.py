@@ -1,24 +1,49 @@
 import streamlit as st
 import json
 import os
-from langchain.schema import HumanMessage, SystemMessage
-from langchain.memory import ConversationBufferMemory
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_groq import ChatGroq
-from sentence_transformers import SentenceTransformer
-import chromadb
+import sys
+import subprocess
+
+# Ensure necessary modules are installed
+try:
+    from langchain.schema import HumanMessage, SystemMessage
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "langchain"])
+    from langchain.schema import HumanMessage, SystemMessage  # Retry import
+
+try:
+    from langchain_huggingface import HuggingFaceEmbeddings
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "langchain_huggingface"])
+    from langchain_huggingface import HuggingFaceEmbeddings  # Retry import
+
+try:
+    from langchain_groq import ChatGroq
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "langchain_groq"])
+    from langchain_groq import ChatGroq  # Retry import
+
+try:
+    from sentence_transformers import SentenceTransformer
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "sentence-transformers"])
+    from sentence_transformers import SentenceTransformer  # Retry import
+
+try:
+    import chromadb
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "chromadb"])
+    import chromadb  # Retry import
 
 # JSON Memory File
 MEMORY_FILE = "chat_memory.json"
 
-# Load chat history from JSON file
 def load_chat_history():
     if os.path.exists(MEMORY_FILE):
         with open(MEMORY_FILE, "r") as file:
             return json.load(file)
     return []
 
-# Save chat history to JSON file
 def save_chat_history(chat_history):
     with open(MEMORY_FILE, "w") as file:
         json.dump(chat_history, file)
@@ -35,34 +60,24 @@ semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
 collection = chroma_client.get_or_create_collection(name="ai_knowledge_base")
 
-# Function to query AI model
 def query_llama3(user_query):
     system_prompt = "System Prompt: Your AI clone personality based on Manas Patni."
-
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_query)
     ]
-
     try:
         response = chat.invoke(messages)
-        
-        # Save conversation to JSON memory
         memory.append({"input": user_query, "output": response.content})
         save_chat_history(memory)
-        
         return response.content
     except Exception as e:
         return f"⚠️ API Error: {str(e)}"
 
-# Streamlit App
 def main():
     st.title("AI Chatbot Based on Manas Patni")
     st.markdown("Welcome to the AI chatbot interface. Ask a question to get started!")
-    
-    # Display Previous Chat History
     st.markdown("### Chat History")
-    
     if memory:
         for chat in memory:
             st.markdown(
@@ -83,11 +98,9 @@ def main():
     else:
         st.write("No previous chat history.")
 
-    # User Input
     user_query = st.text_input("Enter your question:")
     if user_query:
         response = query_llama3(user_query)
-        
         st.markdown(
             f"""
             <div style='display: flex; justify-content: flex-start; margin-bottom: 10px;'>
