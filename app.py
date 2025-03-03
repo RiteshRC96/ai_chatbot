@@ -1,6 +1,3 @@
-import pysqlite3
-import sys
-sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import streamlit as st
 import json
 import os
@@ -27,23 +24,8 @@ install_package("langchain_groq")
 install_package("sentence-transformers")
 install_package("chromadb")
 
-# JSON Memory File
-MEMORY_FILE = "chat_memory.json"
-
-# Load chat history from JSON file
-def load_chat_history():
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as file:
-            return json.load(file)
-    return []
-
-# Save chat history to JSON file
-def save_chat_history(chat_history):
-    with open(MEMORY_FILE, "w") as file:
-        json.dump(chat_history, file)
-
-# Initialize Memory
-memory = load_chat_history()
+# Reset Memory on Refresh
+memory = []
 
 # Initialize Models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -66,9 +48,8 @@ def query_llama3(user_query):
     try:
         response = chat.invoke(messages)
         
-        # Save conversation to JSON memory
+        # Save conversation in session memory (disappears on refresh)
         memory.append({"input": user_query, "output": response.content})
-        save_chat_history(memory)
         
         return response.content
     except Exception as e:
@@ -79,7 +60,7 @@ def main():
     st.title("AI Chatbot Based on Manas Patni")
     st.markdown("Welcome to the AI chatbot interface. Ask a question to get started!")
     
-    # Display Previous Chat History
+    # Display Chat History for the Session Only
     st.markdown("### Chat History")
     
     if memory:
