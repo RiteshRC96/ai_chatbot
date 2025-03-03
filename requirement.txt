@@ -1,8 +1,0 @@
-numpy
-PyPDF2
-langchain
-chromadb
-langchain-huggingface
-streamlit
-groq
-langchain_community
