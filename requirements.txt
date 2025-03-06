@@ -7,4 +7,3 @@ streamlit
 groq
 langchain_community
 langchain_groq
-python3 -c
