@@ -20,7 +20,7 @@ def install_package(package):
 # Ensure necessary libraries are installed
 install_package("langchain")
 install_package("langchain_huggingface")
-install_package("langchain_groq")
+install_package("langchain-groq")
 install_package("sentence-transformers")
 install_package("chromadb")
 
