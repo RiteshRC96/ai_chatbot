@@ -8,3 +8,10 @@ groq
 langchain_community
 sentence-transformers
 pysqlite3-binary 
+langchain
+langchain-groq
+langchain-huggingface
+sentence-transformers
+qdrant-client
+streamlit
+groq
